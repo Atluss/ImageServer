@@ -28,11 +28,11 @@ func Config(path string) (*config, error) {
 
 // config main
 type config struct {
-	Name     string     `json:"Name"`    // API name
-	Version  string     `json:"Version"` // API version
-	Host 	 string		`json:"Host"`
-	Port     string     `json:"Port"`
-	FilePath string     `json:"FilePath"` // path to Json settings file
+	Name     string `json:"Name"`    // API name
+	Version  string `json:"Version"` // API version
+	Host     string `json:"Host"`
+	Port     string `json:"Port"`
+	FilePath string `json:"FilePath"` // path to Json settings file
 }
 
 // load all settings

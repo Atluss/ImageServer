@@ -1,6 +1,8 @@
 package images
 
 import (
+	"bytes"
+	"encoding/base64"
 	"fmt"
 	"github.com/Atluss/ImageServer/lib"
 	"github.com/Atluss/ImageServer/lib/headers"
@@ -14,14 +16,15 @@ import (
 )
 
 const (
-	ImageFolder = "images"
-	PreviewWidth = 100
+	ImageFolder   = "images"
+	PreviewWidth  = 100
 	PreviewHeight = 100
 )
 
 var AllowFormats = [3]string{"jpg", "jpeg", "png"}
 
-func GetImages(r *http.Request) []headers.LoadedImage{
+// GetImagesFormDataAndQuery search all images in multipart/form-data or query request
+func GetImagesFormDataAndQuery(r *http.Request) []headers.LoadedImage {
 
 	images := getImagesFormData(r)
 
@@ -34,11 +37,80 @@ func GetImages(r *http.Request) []headers.LoadedImage{
 	return images
 }
 
-func getImagesFormData(r *http.Request) (images []headers.LoadedImage){
+// createTestFilesDir создаем папку для тестовых файлов отчетов.
+func CreateTestFilesDir(dirName string) error {
+
+	dirname := fmt.Sprintf("./%s/", dirName)
+
+	if _, err := os.Stat(dirname); os.IsNotExist(err) {
+		if err := os.Mkdir(dirname, 0777); err != nil {
+			log.Printf("ERROR: can't create dir, %s", err)
+			return err
+		}
+	}
+
+	return nil
+}
+
+// GetJsonImageBase64 save image from json base64 image
+func GetJsonImageBase64(r *http.Request) (loadedImg headers.LoadedImage, err error) {
+
+	req := headers.RequestCreateImgJsonBase64{}
+	if err := req.Decode(r); err != nil {
+		return loadedImg, err
+	}
+
+	format := ""
+	for _, fr := range AllowFormats {
+		if strings.Contains(req.Data, fr) {
+			format = fr
+		}
+	}
+	if format == "" {
+		return loadedImg, fmt.Errorf("format image file not allow")
+	}
+
+	if img, err := base64.StdEncoding.DecodeString(req.Body); err != nil {
+
+		return loadedImg, err
+
+	} else {
+
+		for {
+			loadedImg = GenerateName(format)
+			if err := lib.CheckFileExist(loadedImg.Source); err != nil {
+				break
+			}
+		}
+
+		out, err := os.Create(loadedImg.Source)
+		if err != nil {
+			log.Println(err)
+		}
+		defer out.Close()
+
+		// Write the body img to file
+		r := bytes.NewReader(img)
+		_, err = io.Copy(out, r)
+		if err != nil {
+			log.Println(err)
+		}
+
+		if err := createPreview(loadedImg, PreviewWidth, PreviewHeight); err != nil {
+			return loadedImg, err
+		}
+
+	}
+
+	return loadedImg, err
+}
+
+func getImagesFormData(r *http.Request) (images []headers.LoadedImage) {
 
 	reader, err := r.MultipartReader()
 	if err != nil {
 		log.Println(err)
+		return images
 	}
 
 	for {
@@ -49,7 +121,7 @@ func getImagesFormData(r *http.Request) (images []headers.LoadedImage){
 
 		if part.FileName() != "" && strings.Contains(part.Header.Get("Content-Type"), "image") {
 
-			loadedImg, err := createImageName(part.FileName())
+			loadedImg, err := CreateImageName(part.FileName())
 			if err != nil {
 				log.Printf("error data %s", err)
 				continue
@@ -84,16 +156,14 @@ func getImagesFormData(r *http.Request) (images []headers.LoadedImage){
 }
 
 // getImageFromLink search query and download image
-func getImageFromLink(r *http.Request) (loadedImg headers.LoadedImage, err error){
+func getImageFromLink(r *http.Request) (loadedImg headers.LoadedImage, err error) {
 
 	link := r.URL.Query().Get("image")
 	if link == "" {
 		return loadedImg, fmt.Errorf("no link send")
 	}
 
-	log.Println(link)
-
-	loadedImg, err = createImageName(link)
+	loadedImg, err = CreateImageName(link)
 	if err != nil {
 		return loadedImg, fmt.Errorf("link not correct, %s", err)
 	}
@@ -125,8 +195,8 @@ func getImageFromLink(r *http.Request) (loadedImg headers.LoadedImage, err error
 	return loadedImg, err
 }
 
-// createImageName generate new name and preview name from source name
-func createImageName(name string) (newName headers.LoadedImage, err error) {
+// CreateImageName generate new name and preview name from source name
+func CreateImageName(name string) (newName headers.LoadedImage, err error) {
 
 	arr := strings.Split(name, ".")
 
@@ -137,12 +207,12 @@ func createImageName(name string) (newName headers.LoadedImage, err error) {
 	format := arr[len(arr)-1]
 
 	// yes it rude but right now perfect no need cycle :)
-	if format != AllowFormats[0] && format != AllowFormats[1] && format != AllowFormats[2]{
+	if format != AllowFormats[0] && format != AllowFormats[1] && format != AllowFormats[2] {
 		return newName, fmt.Errorf("format image file not allow")
 	}
 
 	for {
-		newName = generateName(format)
+		newName = GenerateName(format)
 		if err := lib.CheckFileExist(newName.Source); err != nil {
 			break
 		}
@@ -151,12 +221,12 @@ func createImageName(name string) (newName headers.LoadedImage, err error) {
 	return newName, err
 }
 
-// generateName
-func generateName(format string) (newName headers.LoadedImage) {
+// GenerateName
+func GenerateName(format string) (newName headers.LoadedImage) {
 	shortName := uuid.NewV4()
 	newName.Source = fmt.Sprintf("%s/%s.%s", ImageFolder, shortName, format)
 	newName.Preview = fmt.Sprintf("%s/%s_preview.%s", ImageFolder, shortName, format)
-	return  newName
+	return newName
 }
 
 // createPreview source and sizes
