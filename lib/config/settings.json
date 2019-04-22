@@ -1,0 +1,6 @@
+{
+  "name": "Image Server",
+  "version": "1.0.0",
+  "host" : "localhost",
+  "port" : "8080"
+}

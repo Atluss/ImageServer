@@ -1,0 +1,14 @@
+version: "2"
+
+services:
+  app:
+    container_name: cn_image_server
+    image: golang:1.12.2
+    volumes:
+      - .:/go/src/ImageServer
+    working_dir: /go/src/ImageServer
+    command: go run main.go
+    environment:
+      - GO111MODULE=on
+    ports:
+      - "4080:8080"
