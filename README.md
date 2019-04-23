@@ -1,3 +1,4 @@
+[![GoDoc](https://godoc.org/github.com/Atluss/ImageServer?status.svg)](https://godoc.org/github.com/Atluss/ImageServer)
 ## ImageServer
 
 In this server you can send image to api and server save this image and creating preview image:
