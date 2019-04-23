@@ -6,7 +6,6 @@ import (
 )
 
 func TestSetup(t *testing.T) {
-
 	path := "settings.json"
 	set := NewApiSetup(path)
 

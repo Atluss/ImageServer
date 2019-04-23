@@ -1,3 +1,4 @@
+// various structs for API
 package headers
 
 import (

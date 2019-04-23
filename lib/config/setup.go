@@ -6,26 +6,20 @@ import (
 )
 
 func NewApiSetup(settings string) *Setup {
-
 	cnf, err := Config(settings)
 	lib.FailOnError(err, "error config file")
-
 	set, err := newSetup(cnf)
 	lib.FailOnError(err, "error setup")
-
 	return set
 }
 
 func newSetup(cnf *config) (*Setup, error) {
-
 	set := Setup{}
 	if err := cnf.validate(); err != nil {
 		return &set, err
 	}
-
 	set.Config = cnf
 	set.Route = mux.NewRouter().StrictSlash(true)
-
 	return &set, nil
 }
 

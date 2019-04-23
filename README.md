@@ -1,16 +1,30 @@
 ## ImageServer
 
-In this server you can send api:
+In this server you can send image to api and server save this image and creating preview image:
+
+Work schemes:
 1. link to image;
 2. multipart/form-data;
 3. image in base64.
 
-Server save image and create preview 100x100 px. 
 Allows formats: **jpg, jpeg, png**. All images save in `images` folder and if you want you can open it.
+
+Project use [Go modules](https://github.com/golang/go/wiki/Modules) to download dependencies.
+You can see dependencies in `go.mod`
+
+Test requests you can find in folder: `test_client` run it, when api is running, don't forget change ports.
+
+## How to run
+
+Don't forget add your user for docker group `sudo usermod -aG docker $USER`. Server run on port `4080`
+
+ 1. [Install Docker-CE (ubuntu)](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
+ 2. [Install Docker compose](https://docs.docker.com/compose/install/)
+ 3. `sudo docker-compose up`
 
 ## Endpoints
 
-### http://localhost:4080/form_data (multipart/form-data and query argument)
+### http://localhost:4080/form_data
 
 This endpoint allowed to work in two modes at once: `query` and `multipart/form-data`
 
@@ -50,10 +64,14 @@ This endpoint only for json base64 image, the body of request, reply have only o
 }
 ```
 
-## How to run
+### API setup file
 
-Don't forget add your user for docker group `sudo usermod -aG docker $USER`. Server run on port `4080`
-
- 1. [Install Docker-CE (ubuntu)](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
- 2. [Install Docker compose](https://docs.docker.com/compose/install/)
- 3. `sudo docker-compose up`
+Api setup file in [Json RFC7159](https://tools.ietf.org/html/rfc7159) format, all arguments is necessary:
+```json
+{
+  "name": "Image Server",
+  "version": "1.0.0",
+  "host" : "localhost",
+  "port" : "8080"
+}
+```

@@ -15,7 +15,7 @@ func TestGenerateName(t *testing.T) {
 
 func TestCreateImageName(t *testing.T) {
 	if st, err := CreateImageName(fmt.Sprintf("asdasd.%s", AllowFormats[0])); err != nil {
-		log.Printf("Error: %s", err)
+		t.Errorf("Error: %s", err)
 	} else {
 		log.Printf("Source: %s", st.Source)
 		log.Printf("Preview: %s", st.Preview)
