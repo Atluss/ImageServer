@@ -3,10 +3,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/Atluss/ImageServer/lib"
-	"github.com/Atluss/ImageServer/lib/config"
-	"github.com/Atluss/ImageServer/lib/headers"
-	"github.com/Atluss/ImageServer/lib/images"
+	"github.com/Atluss/ImageServer/pkg/v1"
+	"github.com/Atluss/ImageServer/pkg/v1/config"
+	"github.com/Atluss/ImageServer/pkg/v1/headers"
+	"github.com/Atluss/ImageServer/pkg/v1/images"
 	"log"
 	"net/http"
 	"os"
@@ -27,7 +27,7 @@ func main() {
 		os.Exit(1)
 	}()
 
-	lib.FailOnError(images.CreateTestFilesDir(images.ImageFolder), "fatal error")
+	v1.FailOnError(images.CreateTestFilesDir(images.ImageFolder), "fatal error")
 	// handle multipart/form-data and query
 	set.Route.HandleFunc("/form_data", func(w http.ResponseWriter, r *http.Request) {
 		headers.SetDefaultHeadersJson(w)
@@ -40,7 +40,7 @@ func main() {
 			reply.Status = http.StatusBadRequest
 			reply.Description = "Images not found :("
 		}
-		lib.LogOnError(reply.Encode(w), "error")
+		v1.LogOnError(reply.Encode(w), "error")
 	})
 	// handle json base64 image
 	set.Route.HandleFunc("/json_image", func(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +57,7 @@ func main() {
 		} else {
 			reply.Images = append(reply.Images, img)
 		}
-		lib.LogOnError(reply.Encode(w), "error")
+		v1.LogOnError(reply.Encode(w), "error")
 	})
 
 	// images public folder
@@ -65,5 +65,5 @@ func main() {
 	pImgDir := fmt.Sprintf("./%s", images.ImageFolder)
 	set.Route.PathPrefix(sImgDir).Handler(http.StripPrefix(sImgDir, http.FileServer(http.Dir(pImgDir))))
 
-	lib.FailOnError(http.ListenAndServe(fmt.Sprintf(":%s", set.Config.Port), set.Route), "error")
+	v1.FailOnError(http.ListenAndServe(fmt.Sprintf(":%s", set.Config.Port), set.Route), "error")
 }

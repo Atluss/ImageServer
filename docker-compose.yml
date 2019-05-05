@@ -6,7 +6,7 @@ services:
     image: golang:1.12.2
     volumes:
       - .:/go/src/ImageServer
-    working_dir: /go/src/ImageServer
+    working_dir: /go/src/ImageServer/cmd/imageServer
     command: go run main.go
     environment:
       - GO111MODULE=on

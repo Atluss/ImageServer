@@ -4,7 +4,7 @@ package headers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Atluss/ImageServer/lib"
+	"github.com/Atluss/ImageServer/pkg/v1"
 	"net/http"
 )
 
@@ -21,7 +21,7 @@ type ReplayStatus struct {
 
 func (obj *ReplayStatus) Encode(w http.ResponseWriter) error {
 	err := json.NewEncoder(w).Encode(&obj)
-	if !lib.LogOnError(err, "error: can't encode ReplayStatus") {
+	if !v1.LogOnError(err, "error: can't encode ReplayStatus") {
 		return err
 	}
 	return nil

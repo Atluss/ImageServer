@@ -1,15 +1,15 @@
 package config
 
 import (
-	"github.com/Atluss/ImageServer/lib"
+	"github.com/Atluss/ImageServer/pkg/v1"
 	"github.com/gorilla/mux"
 )
 
 func NewApiSetup(settings string) *Setup {
 	cnf, err := Config(settings)
-	lib.FailOnError(err, "error config file")
+	v1.FailOnError(err, "error config file")
 	set, err := newSetup(cnf)
-	lib.FailOnError(err, "error setup")
+	v1.FailOnError(err, "error setup")
 	return set
 }
 

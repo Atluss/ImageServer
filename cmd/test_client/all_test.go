@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/Atluss/ImageServer/lib/headers"
+	"github.com/Atluss/ImageServer/pkg/v1/headers"
 	"io"
 	"mime/multipart"
 	"net/http"

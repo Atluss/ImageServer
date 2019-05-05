@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
-	"github.com/Atluss/ImageServer/lib"
-	"github.com/Atluss/ImageServer/lib/headers"
+	v1 "github.com/Atluss/ImageServer/pkg/v1"
+	"github.com/Atluss/ImageServer/pkg/v1/headers"
+
 	"github.com/disintegration/imaging"
 	uuid "github.com/satori/go.uuid"
 	"io"
@@ -66,7 +67,7 @@ func GetJsonImageBase64(r *http.Request) (loadedImg headers.LoadedImage, err err
 	} else {
 		for {
 			loadedImg = GenerateName(format)
-			if err := lib.CheckFileExist(loadedImg.Source); err != nil {
+			if err := v1.CheckFileExist(loadedImg.Source); err != nil {
 				break
 			}
 		}
@@ -174,7 +175,7 @@ func CreateImageName(name string) (newName headers.LoadedImage, err error) {
 	}
 	for {
 		newName = GenerateName(format)
-		if err := lib.CheckFileExist(newName.Source); err != nil {
+		if err := v1.CheckFileExist(newName.Source); err != nil {
 			break
 		}
 	}
