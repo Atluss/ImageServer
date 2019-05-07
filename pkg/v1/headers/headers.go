@@ -38,10 +38,7 @@ type RequestCreateImgJsonBase64 struct {
 
 // Decode request
 func (t *RequestCreateImgJsonBase64) Decode(r *http.Request) error {
-	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
-		return err
-	}
-	return nil
+	return json.NewDecoder(r.Body).Decode(&t)
 }
 
 // Validate request

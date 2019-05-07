@@ -39,7 +39,7 @@ func GetImagesFormDataAndQuery(r *http.Request) []headers.LoadedImage {
 	return images
 }
 
-// createTestFilesDir создаем папку для тестовых файлов отчетов.
+// CreateTestFilesDir создаем папку для тестовых файлов отчетов.
 func CreateTestFilesDir(dirName string) error {
 	dirname := fmt.Sprintf("./%s/", dirName)
 	if _, err := os.Stat(dirname); os.IsNotExist(err) {
