@@ -1,4 +1,4 @@
-// various structs for API
+// Package headers various structs for API
 package headers
 
 import (
@@ -8,17 +8,20 @@ import (
 	"net/http"
 )
 
+// LoadedImage struct for image Source is full image and Preview
 type LoadedImage struct {
 	Source  string
 	Preview string
 }
 
+// ReplayStatus for complete requests
 type ReplayStatus struct {
 	Status      int           `json:"Status"`
 	Description string        `json:"Description"`
 	Images      []LoadedImage `json:"Images"`
 }
 
+// Encode to json
 func (obj *ReplayStatus) Encode(w http.ResponseWriter) error {
 	err := json.NewEncoder(w).Encode(&obj)
 	if !v1.LogOnError(err, "error: can't encode ReplayStatus") {
@@ -27,6 +30,7 @@ func (obj *ReplayStatus) Encode(w http.ResponseWriter) error {
 	return nil
 }
 
+// RequestCreateImgJsonBase64 struct for base64 images
 type RequestCreateImgJsonBase64 struct {
 	Data string `json:"Data"` // Example: data:image/jpeg;
 	Body string `json:"Body"` // body Base64
@@ -40,6 +44,7 @@ func (t *RequestCreateImgJsonBase64) Decode(r *http.Request) error {
 	return nil
 }
 
+// Validate request
 func (t *RequestCreateImgJsonBase64) Validate() error {
 	if t.Data == "" || t.Body == "" {
 		return fmt.Errorf("error: bad request")
@@ -47,6 +52,7 @@ func (t *RequestCreateImgJsonBase64) Validate() error {
 	return nil
 }
 
+// SetDefaultHeadersJson for json pages
 func SetDefaultHeadersJson(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")

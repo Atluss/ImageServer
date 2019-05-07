@@ -1,4 +1,3 @@
-// run this test when api runs
 package test_client
 
 import (

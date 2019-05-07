@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// NewApiSetup return new api setup with router
 func NewApiSetup(settings string) *Setup {
 	cnf, err := Config(settings)
 	v1.FailOnError(err, "error config file")
@@ -23,7 +24,7 @@ func newSetup(cnf *config) (*Setup, error) {
 	return &set, nil
 }
 
-// setup main setup api struct
+// Setup main setup api struct
 type Setup struct {
 	Config *config     // api setting
 	Route  *mux.Router // mux frontend

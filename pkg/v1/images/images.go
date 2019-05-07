@@ -17,11 +17,15 @@ import (
 )
 
 const (
-	ImageFolder   = "images"
-	PreviewWidth  = 100
+	// ImageFolder for downloaded images folder
+	ImageFolder = "images"
+	// PreviewWidth width
+	PreviewWidth = 100
+	// PreviewHeight height
 	PreviewHeight = 100
 )
 
+// AllowFormats formats to download
 var AllowFormats = [3]string{"jpg", "jpeg", "png"}
 
 // GetImagesFormDataAndQuery search all images in multipart/form-data or query request
@@ -62,30 +66,33 @@ func GetJsonImageBase64(r *http.Request) (loadedImg headers.LoadedImage, err err
 	if format == "" {
 		return loadedImg, fmt.Errorf("format image file not allow")
 	}
-	if img, err := base64.StdEncoding.DecodeString(req.Body); err != nil {
+
+	var img []byte
+	if img, err = base64.StdEncoding.DecodeString(req.Body); err != nil {
 		return loadedImg, err
-	} else {
-		for {
-			loadedImg = GenerateName(format)
-			if err := v1.CheckFileExist(loadedImg.Source); err != nil {
-				break
-			}
-		}
-		out, err := os.Create(loadedImg.Source)
-		if err != nil {
-			log.Println(err)
-		}
-		defer out.Close()
-		// Write the body img to file
-		r := bytes.NewReader(img)
-		_, err = io.Copy(out, r)
-		if err != nil {
-			log.Println(err)
-		}
-		if err := createPreview(loadedImg, PreviewWidth, PreviewHeight); err != nil {
-			return loadedImg, err
+	}
+
+	for {
+		loadedImg = GenerateName(format)
+		if err := v1.CheckFileExist(loadedImg.Source); err != nil {
+			break
 		}
 	}
+	out, err := os.Create(loadedImg.Source)
+	if err != nil {
+		log.Println(err)
+	}
+	defer out.Close()
+	// Write the body img to file
+	rImg := bytes.NewReader(img)
+	_, err = io.Copy(out, rImg)
+	if err != nil {
+		log.Println(err)
+	}
+	if err := createPreview(loadedImg, PreviewWidth, PreviewHeight); err != nil {
+		return loadedImg, err
+	}
+
 	return loadedImg, err
 }
 
@@ -96,8 +103,8 @@ func getImagesFormData(r *http.Request) (images []headers.LoadedImage) {
 		return images
 	}
 	for {
-		part, err_part := reader.NextPart()
-		if err_part == io.EOF {
+		part, errPart := reader.NextPart()
+		if errPart == io.EOF {
 			break
 		}
 		if strings.Contains(part.Header.Get("Content-Type"), "image") && part.FileName() != "" {
@@ -182,7 +189,7 @@ func CreateImageName(name string) (newName headers.LoadedImage, err error) {
 	return newName, err
 }
 
-// GenerateName
+// GenerateName generate name for 1st cycle
 func GenerateName(format string) (newName headers.LoadedImage) {
 	shortName := uuid.NewV4()
 	newName.Source = fmt.Sprintf("%s/%s.%s", ImageFolder, shortName, format)

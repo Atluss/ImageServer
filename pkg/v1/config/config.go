@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-// config load new config for API
+// Config load new config for API
 func Config(path string) (*config, error) {
 	conf := config{}
 	if err := v1.CheckFileExist(path); err != nil {

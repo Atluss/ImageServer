@@ -1,3 +1,4 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/Atluss/ImageServer)](https://goreportcard.com/report/github.com/Atluss/ImageServer)
 [![GoDoc](https://godoc.org/github.com/Atluss/ImageServer?status.svg)](https://godoc.org/github.com/Atluss/ImageServer)
 ## ImageServer
 
@@ -13,7 +14,7 @@ Allows formats: **jpg, jpeg, png**. All images save in `images` folder and if yo
 Project use [Go modules](https://github.com/golang/go/wiki/Modules) to download dependencies.
 You can see dependencies in `go.mod`
 
-Test requests you can find in folder: `test_client` run it, when api is running, don't forget change ports.
+Test requests you can find in folder: `cmd/test_client` run it, when api is running, don't forget change ports.
 
 ## How to run
 
